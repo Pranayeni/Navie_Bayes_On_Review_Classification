@@ -10,7 +10,7 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 
 # load the trained model
-with open('review.pkl','rb') as file:
+with open('sentiment_model.pkl','rb') as file:
     model=pickle.load(file)
 
 # Load the vectorizer
