@@ -2,49 +2,43 @@ import streamlit as st
 import pickle
 import nltk
 from preprocessing import clean
+from sklearn.feature_extraction.text import CountVectorizer
+vect=CountVectorizer()
 
-# ---------- NLTK Setup ----------
-def download_nltk():
-    try:
-        nltk.data.find('tokenizers/punkt')
-    except LookupError:
-        nltk.download('punkt')
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')
 
-    try:
-        nltk.data.find('corpora/stopwords')
-    except LookupError:
-        nltk.download('stopwords')
+# load the trained model
+with open('review.pkl','rb') as file:
+    model=pickle.load(file)
 
-    try:
-        nltk.data.find('corpora/wordnet')
-    except LookupError:
-        nltk.download('wordnet')
-
-download_nltk()
-
-# ---------- Load Model ----------
-with open('Sentiment_model.pkl','rb') as file:
-    model = pickle.load(file)
-
-# ---------- Load Vectorizer ----------
+# Load the vectorizer
 with open('vectorizer.pkl', 'rb') as f:
     vect = pickle.load(f)
+    
 
-# ---------- UI ----------
+# App title
 st.title('Review Analysis')
+
 st.write('Enter the review below to check whether its a **Positive** or **Negative**.')
+# text input
+text=st.text_area('Review',height=150)
 
-text = st.text_area('Review', height=150)
+# Now you can transform new text
+sample_vectorized = vect.transform([text])
 
+
+
+# prediction button
 if st.button('Predict'):
-    if text.strip() == "":
+    if text.strip()=="":
         st.warning('Please enter some text')
     else:
-        cleaned = clean(text)
-        sample_vectorized = vect.transform([cleaned])
-        prediction = model.predict(sample_vectorized)[0]
+        prediction=model.predict(sample_vectorized)[0]
 
-        if prediction == 1:
-            st.success('Its a positive review 😃')
+        if prediction==1:
+            st.success('its a positive review😃')
         else:
-            st.error('Its a negative review 😑')
+            st.error('its a negative review😑')
+            
